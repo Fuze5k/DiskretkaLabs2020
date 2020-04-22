@@ -78,7 +78,7 @@ namespace DrawingGraphs
                 if (viseted[i] == false)
                 {
                     if (drawchisla)
-                        DrawVertexString((i+1).ToString(), (int)(figure.Radius / 1.5), vertex[i].X - figure.Radius / 2, vertex[i].Y - (int)(figure.Radius * 1.5));
+                        DrawVertexString((i + 1).ToString(), (int)(figure.Radius / 1.5), vertex[i].X - figure.Radius / 2, vertex[i].Y - (int)(figure.Radius * 1.5));
                     DFS(i, ref viseted, ref prev, adjencymatrix, n, vertex, arrow, interval, color, ref numvertex, drawchisla);
                 }
             }
@@ -184,6 +184,11 @@ namespace DrawingGraphs
                         if (i != j)
                         {
                             List<Point> vertexpoint = new List<Point>() { p1, p2 };
+
+                            if (arrow)
+                                if (adjacencymatrix[i, j] == adjacencymatrix[j, i])
+                                    vertexpoint.Insert(1, GeneratePoint(vertexcircle, p1, p2));
+
                             vertexpoint = PavingTheWay(vertexcircle, vertexpoint, i, j);
                             vertexpoint = DeleteExcessivePoint(vertexpoint, vertexcircle, i, j);
 
