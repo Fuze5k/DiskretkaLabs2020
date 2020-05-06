@@ -28,7 +28,7 @@ namespace DrawingGraphs.Logic
         {
             return GenerateAdjanceMatrixForLabs(n, n1, n2, n3, n4, 1.0, 0.01, 0.005, 0.05, napryam);
         }
-        public static int[,] GenerateWeightMatrixLab5(int[,] matrix, int n, int n1, int n2, int n3, int n4, bool napryam)
+        public static int[,] GenerateWeightMatrixLab5(int[,] matrix, int n, int n1, int n2, int n3, int n4)
         {
             Random random = new Random(n1 * 1000 + n2 * 100 + n3 * 10 + n4);
             int[,] a = matrix;

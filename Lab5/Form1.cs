@@ -18,6 +18,7 @@ namespace Lab5
     {
         private int[,] weightMatrix;
         private int[,] matrix;
+        private int[,] kgm;
         private int n = 10;
         private bool IsDrawing = false;
         private Graphics graphics;
@@ -26,7 +27,8 @@ namespace Lab5
             InitializeComponent();
             this.graphics = this.CreateGraphics();
             matrix = GraphHelper.GenerateAdjanceMatrixLab5(10, 9, 3, 0, 8, checkBox1.Checked);
-            weightMatrix = GraphHelper.GenerateWeightMatrixLab5((int[,])matrix.Clone(), n, 9, 3, 0, 8, checkBox1.Checked);
+            weightMatrix = GraphHelper.GenerateWeightMatrixLab5((int[,])matrix.Clone(), n, 9, 3, 0, 8);
+            kgm = GraphHelper.KraskalAlgorithm(n, (int[,])matrix.Clone(), (int[,])weightMatrix.Clone());
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -46,7 +48,8 @@ namespace Lab5
                 MessageBox.Show("n must be a number!!!");
             }
             matrix = GraphHelper.GenerateAdjanceMatrixLab5(n, 9, 3, 0, 8, checkBox1.Checked);
-            GraphHelper.GenerateWeightMatrixLab5((int[,])matrix.Clone(), n, 9, 3, 0, 8, checkBox1.Checked);
+            weightMatrix = GraphHelper.GenerateWeightMatrixLab5((int[,])matrix.Clone(), n, 9, 3, 0, 8);
+            kgm = GraphHelper.KraskalAlgorithm(n, (int[,])matrix.Clone(), (int[,])weightMatrix.Clone());
             Draw();
         }
 
@@ -115,7 +118,7 @@ namespace Lab5
 
         private void button3_Click(object sender, EventArgs e)
         {
-            int[,] kgm = GraphHelper.KraskalAlgorithm(n, (int[,])matrix.Clone(), (int[,])weightMatrix.Clone());
+            kgm = GraphHelper.KraskalAlgorithm(n, (int[,])matrix.Clone(), (int[,])weightMatrix.Clone());
             Form form = new Form();
             form.Show();
             form.Width = 820;
@@ -128,7 +131,7 @@ namespace Lab5
 
         private void button6_Click(object sender, EventArgs e)
         {
-            int[,] b = (int[,])weightMatrix.Clone();
+            int[,] b = (int[,])kgm.Clone();
             Form form = new Form();
             form.Show();
             form.AutoSize = true;
