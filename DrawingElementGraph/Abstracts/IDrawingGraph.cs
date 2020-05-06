@@ -4,6 +4,6 @@ namespace DrawingGraphs.Abstracts
 {
     interface IDrawingGraph
     {
-        void DrawGraph(int[,] matrix, TypeLocationVertex type,bool arrow);
+        void DrawGraph(int[,] matrix, int[,] weigthmatrix, TypeLocationVertex type, bool arrow, int interval);
     }
 }

@@ -25,7 +25,7 @@ namespace Lab3
         {
             InitializeComponent();
             this.graphics = this.CreateGraphics();
-            matrix = GraphHelper.GenerateMatrixLab3(n, 9, 3, 0, 8);
+            matrix = GraphHelper.GenerateAdjanceMatrixLab3(n, 9, 3, 0, 8, checkBox1.Checked);
 
         }
 
@@ -42,7 +42,7 @@ namespace Lab3
                 n = 10;
                 MessageBox.Show("n must be a number!!!");
             }
-            matrix = GraphHelper.GenerateMatrixLab3(n, 9, 3, 0, 8);
+            matrix = GraphHelper.GenerateAdjanceMatrixLab3(n, 9, 3, 0, 8, checkBox1.Checked);
 
             Draw();
         }
@@ -60,7 +60,7 @@ namespace Lab3
             CreateNotNapryamMatrix();
             graphics.Clear(Color.White);
             DrawingGraph drawing = new DrawingGraph(graphics, n, 1, this.Size.Width - 100, this.Size.Height);
-            drawing.DrawGraph(matrix, DrawingGraphs.Enums.TypeLocationVertex.RectangleWithCenter, arrow);
+            drawing.DrawGraph((int[,])matrix.Clone(), null, DrawingGraphs.Enums.TypeLocationVertex.RectangleWithCenter, arrow, 0);
 
         }
 
@@ -385,7 +385,7 @@ namespace Lab3
             }
 
             DrawingGraph drawing = new DrawingGraph(form.CreateGraphics(), result.Count, 1, this.Size.Width, this.Size.Height);
-            drawing.DrawGraph(m, DrawingGraphs.Enums.TypeLocationVertex.RectangleWithCenter, arrow);
+            drawing.DrawGraph(m, null, DrawingGraphs.Enums.TypeLocationVertex.RectangleWithCenter, arrow, 0);
         }
     }
 }

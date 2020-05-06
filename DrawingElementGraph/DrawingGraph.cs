@@ -35,13 +35,13 @@ namespace DrawingGraphs
         {
             this.figure = new MyRectangle(n, rcircle, heightform, widthform);
         }
-        public void DrawGraph(int[,] adjacencymatrix, TypeLocationVertex type, bool arrow)
+        public void DrawGraph(int[,] adjacencymatrix, int[,] weigthmatrix, TypeLocationVertex type, bool arrow, int interval)
         {
             List<Point> vertex = GetPointLocationVertex(type);
             DrawVertexCircle(vertex);
             DrawVertexChisla(vertex);
 
-            DrawAllLine(adjacencymatrix, vertex, arrow, 0, Color.Black);
+            DrawAllLine(adjacencymatrix, vertex, arrow, interval, Color.Black, weigthmatrix);
         }
 
         public void DrawNewNumericGraph(int[,] adjacencymatrix, TypeLocationVertex type, bool arrow)
@@ -78,7 +78,7 @@ namespace DrawingGraphs
                 if (viseted[i] == false)
                 {
                     if (drawchisla)
-                        DrawVertexString((i + 1).ToString(), (int)(figure.Radius / 1.5), vertex[i].X - figure.Radius / 2, vertex[i].Y - (int)(figure.Radius * 1.5));
+                        DrawVertexString((i + 1).ToString(), (int)(figure.Radius / 1.5), vertex[i].X - figure.Radius / 2, vertex[i].Y - (int)(figure.Radius * 1.5), Color.Black);
                     DFS(i, ref viseted, ref prev, adjencymatrix, n, vertex, arrow, interval, color, ref numvertex, drawchisla);
                 }
             }
@@ -95,16 +95,16 @@ namespace DrawingGraphs
                 {
                     prev[i] = start;
                     if (drawchisla)
-                        DrawVertexString((numvertex).ToString(), (int)(figure.Radius / 1.5), vertex[i].X - figure.Radius / 2, vertex[i].Y - (int)(figure.Radius * 1.5));
+                        DrawVertexString((numvertex).ToString(), (int)(figure.Radius / 1.5), vertex[i].X - figure.Radius / 2, vertex[i].Y - (int)(figure.Radius * 1.5), Color.Black);
                     numvertex++;
-                    DrawOneLine(prev[i], i, adjacencymatrix, vertex, arrow, color);
+                    DrawOneLine(prev[i], i, adjacencymatrix, vertex, arrow, color, null);
                     System.Threading.Thread.Sleep(interval);
                     DFS(i, ref visited, ref prev, adjacencymatrix, n, vertex, arrow, interval, color, ref numvertex, drawchisla);
                 }
             }
         }
 
-        private void DrawOneLine(int indp1, int indp2, int[,] adjacencymatrix, List<Point> vertex, bool arrow, Color color)
+        private void DrawOneLine(int indp1, int indp2, int[,] adjacencymatrix, List<Point> vertex, bool arrow, Color color, int[,] weigthmatrix)
         {
             List<Point> vertexcircle = new List<Point>();
             for (int i = 0; i < vertex.Count; i++)
@@ -118,6 +118,11 @@ namespace DrawingGraphs
             if (indp1 != indp2)
             {
                 List<Point> vertexpoint = new List<Point>() { p1, p2 };
+
+                if (arrow)
+                    if (adjacencymatrix[indp1, indp2] == adjacencymatrix[indp2, indp1])
+                        vertexpoint.Insert(1, GeneratePoint(vertexcircle, p1, p2));
+
                 vertexpoint = PavingTheWay(vertexcircle, vertexpoint, indp1, indp2);
                 vertexpoint = DeleteExcessivePoint(vertexpoint, vertexcircle, indp1, indp2);
 
@@ -147,6 +152,10 @@ namespace DrawingGraphs
                 {
                     DrawLine(vertexpoint[vertexpoint.Count - 2], p2, this.widthline, color);
                 }
+
+                vertexpoint[vertexpoint.Count - 1] = p2;
+                if (weigthmatrix != null)
+                    DrawVertexString(weigthmatrix[indp1, indp2].ToString(), (int)(figure.Radius / 4), vertexpoint[vertexpoint.Count / 2].X-5, vertexpoint[vertexpoint.Count / 2].Y, Color.Red);
             }
             else
             {
@@ -161,77 +170,16 @@ namespace DrawingGraphs
             }
         }
 
-        private void DrawAllLine(int[,] adjacencymatrix, List<Point> vertex, bool arrow, int interval, Color color)
+        private void DrawAllLine(int[,] adjacencymatrix, List<Point> vertex, bool arrow, int interval, Color color, int[,] weigthmatrix)
         {
-            List<Point> vertexcircle = new List<Point>();
-            Brush brush = Brushes.Red;
-            for (int i = 0; i < vertex.Count; i++)
-            {
-                vertexcircle.Add(new Point(vertex[i].X - figure.Radius, vertex[i].Y - figure.Radius));
-                //graphics.FillRectangle(brush,vertexcircle[i].X,vertexcircle[i].Y,2,2);
-            }
             for (int i = 0; i < n; i++)
             {
                 for (int j = 0; j < n; j++)
                 {
                     if (adjacencymatrix[i, j] >= 1 /*&& adjacencymatrix[i, j] != adjacencymatrix[j, i]*/)
                     {
-                        if (!arrow)
-                            adjacencymatrix[j, i] = 0;
-
-                        Point p1 = new Point(vertex[i].X - figure.Radius, vertex[i].Y - figure.Radius);
-                        Point p2 = new Point(vertex[j].X - figure.Radius, vertex[j].Y - figure.Radius);
-                        if (i != j)
-                        {
-                            List<Point> vertexpoint = new List<Point>() { p1, p2 };
-
-                            if (arrow)
-                                if (adjacencymatrix[i, j] == adjacencymatrix[j, i])
-                                    vertexpoint.Insert(1, GeneratePoint(vertexcircle, p1, p2));
-
-                            vertexpoint = PavingTheWay(vertexcircle, vertexpoint, i, j);
-                            vertexpoint = DeleteExcessivePoint(vertexpoint, vertexcircle, i, j);
-
-                            Point vect = new Point(vertexpoint[1].X - p1.X, vertexpoint[1].Y - p1.Y);
-                            int rad = figure.Radius + 5;
-                            double alpha = Math.Atan2(vect.Y, vect.X);
-                            p1.X += (int)(rad * Math.Cos(alpha));
-                            p1.Y += (int)(rad * Math.Sin(alpha));
-                            vertexpoint[0] = new Point(p1.X, p1.Y);
-
-                            for (int z = 0; z < vertexpoint.Count - 2; z++)
-                            {
-                                DrawLine(vertexpoint[z], vertexpoint[z + 1], this.widthline, color);
-
-                            }
-
-                            vect = new Point(p2.X - vertexpoint[vertexpoint.Count - 2].X, p2.Y - vertexpoint[vertexpoint.Count - 2].Y);
-                            alpha = Math.Atan2(vect.Y, vect.X);
-                            p2.X -= (int)(rad * Math.Cos(alpha));
-                            p2.Y -= (int)(rad * Math.Sin(alpha));
-
-                            if (arrow)
-                            {
-                                DrawLineWithArrow(vertexpoint[vertexpoint.Count - 2], p2, this.widthline, color);
-                            }
-                            else
-                            {
-                                DrawLine(vertexpoint[vertexpoint.Count - 2], p2, this.widthline, color);
-                            }
-                        }
-                        else
-                        {
-                            if (arrow)
-                            {
-                                DrawArcWithArrow(figure.Radius / 2, p1.X - figure.Radius / 2, p1.Y + figure.Radius / 2, this.widthline, color);
-                            }
-                            else
-                            {
-                                DrawArc(figure.Radius / 2, p1.X - figure.Radius / 2, p1.Y + figure.Radius / 2, this.widthline, color);
-                            }
-                        }
-
-                        Thread.Sleep(interval);
+                        DrawOneLine(i, j, adjacencymatrix, vertex, arrow, color, weigthmatrix);
+                        System.Threading.Thread.Sleep(interval);
                     }
                 }
             }
@@ -453,7 +401,7 @@ namespace DrawingGraphs
         {
             for (int i = 0; i < vertex.Count; i++)
             {
-                DrawVertexString((i + 1).ToString(), (int)(figure.Radius / 1.5), vertex[i].X - figure.Radius / 2, vertex[i].Y - (int)(figure.Radius * 1.5));
+                DrawVertexString((i + 1).ToString(), (int)(figure.Radius / 1.5), vertex[i].X - figure.Radius / 2, vertex[i].Y - (int)(figure.Radius * 1.5), Color.Black);
             }
         }
         private void DrawVertexCircle(List<Point> vertex)

@@ -71,12 +71,12 @@ namespace DrawingGraphs.Logic
 
         }
 
-        public void DrawVertexString(string str, int font, int x, int y)
+        public void DrawVertexString(string str, int font, int x, int y, Color color)
         {
             if (font < 1)
                 font = 1;
             Font f = new Font("Arial", font);
-            SolidBrush brush = new SolidBrush(Color.Black);
+            SolidBrush brush = new SolidBrush(color);
             StringFormat stringFormat = new StringFormat();
             stringFormat.FormatFlags = StringFormatFlags.DirectionRightToLeft;
             try

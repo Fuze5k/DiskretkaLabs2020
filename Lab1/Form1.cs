@@ -23,7 +23,7 @@ namespace Lab1
         {
             InitializeComponent();
             this.graphics = this.CreateGraphics();
-            matrix = GraphHelper.GenerateMatrixLab1(10, 9, 3, 0, 8);
+            matrix = GraphHelper.GenerateAdjanceMatrixLab1(10, 9, 3, 0, 8,checkBox1.Checked);
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -42,7 +42,7 @@ namespace Lab1
                 n = 10;
                 MessageBox.Show("n must be a number!!!");
             }
-            matrix = GraphHelper.GenerateMatrixLab1(n, 9, 3, 0, 8);
+            matrix = GraphHelper.GenerateAdjanceMatrixLab1(n, 9, 3, 0, 8, checkBox1.Checked);
 
             Draw();
         }
@@ -57,7 +57,7 @@ namespace Lab1
         {
             graphics.Clear(Color.White);
             DrawingGraph drawing = new DrawingGraph(graphics, n, 1, this.Size.Width, this.Size.Height);
-            drawing.DrawGraph(matrix, DrawingGraphs.Enums.TypeLocationVertex.RectangleWithCenter, checkBox1.Checked);
+            drawing.DrawGraph((int[,])matrix.Clone(),null, DrawingGraphs.Enums.TypeLocationVertex.RectangleWithCenter, checkBox1.Checked,0);
             for (int i = 0; i < n; i++)
             {
                 for (int j = 0; j < n; j++)

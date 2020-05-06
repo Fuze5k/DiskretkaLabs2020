@@ -12,10 +12,11 @@ using System.Windows.Forms;
 using DrawingGraphs;
 using DrawingGraphs.Logic;
 
-namespace Lab4
+namespace Lab5
 {
     public partial class Form1 : Form
     {
+        private int[,] weightMatrix;
         private int[,] matrix;
         private int n = 10;
         private bool IsDrawing = false;
@@ -24,7 +25,8 @@ namespace Lab4
         {
             InitializeComponent();
             this.graphics = this.CreateGraphics();
-            matrix = GraphHelper.GenerateAdjanceMatrixLab4(10, 9, 3, 0, 8, checkBox1.Checked);
+            matrix = GraphHelper.GenerateAdjanceMatrixLab5(10, 9, 3, 0, 8, checkBox1.Checked);
+            weightMatrix = GraphHelper.GenerateWeightMatrixLab5((int[,])matrix.Clone(), n, 9, 3, 0, 8, checkBox1.Checked);
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -43,8 +45,8 @@ namespace Lab4
                 n = 10;
                 MessageBox.Show("n must be a number!!!");
             }
-            matrix = GraphHelper.GenerateAdjanceMatrixLab4(n, 9, 3, 0, 8, checkBox1.Checked);
-
+            matrix = GraphHelper.GenerateAdjanceMatrixLab5(n, 9, 3, 0, 8, checkBox1.Checked);
+            GraphHelper.GenerateWeightMatrixLab5((int[,])matrix.Clone(), n, 9, 3, 0, 8, checkBox1.Checked);
             Draw();
         }
 
@@ -58,7 +60,15 @@ namespace Lab4
         {
             graphics.Clear(Color.White);
             DrawingGraph drawing = new DrawingGraph(graphics, n, 1, this.Size.Width, this.Size.Height);
-            drawing.DrawGraph((int[,])matrix.Clone(), null, DrawingGraphs.Enums.TypeLocationVertex.RectangleWithCenter, checkBox1.Checked, 0);
+            drawing.DrawGraph((int[,])matrix.Clone(), weightMatrix, DrawingGraphs.Enums.TypeLocationVertex.RectangleWithCenter, checkBox1.Checked, 0);
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    Console.Write(matrix[i, j]);
+                }
+                Console.WriteLine();
+            }
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -105,27 +115,20 @@ namespace Lab4
 
         private void button3_Click(object sender, EventArgs e)
         {
+            int[,] kgm = GraphHelper.KraskalAlgorithm(n, (int[,])matrix.Clone(), (int[,])weightMatrix.Clone());
             Form form = new Form();
             form.Show();
             form.Width = 820;
             form.Height = 500;
             DrawingGraph drawing = new DrawingGraph(form.CreateGraphics(), n, 1, form.Width, form.Height);
-            drawing.DrawStagesGraph((int[,])matrix.Clone(), DrawingGraphs.Enums.TypeLocationVertex.RectangleWithCenter, checkBox1.Checked);
+            drawing.DrawGraph(kgm, weightMatrix, DrawingGraphs.Enums.TypeLocationVertex.RectangleWithCenter, checkBox1.Checked, 1000);
         }
 
-        private void button4_Click(object sender, EventArgs e)
-        {
-            Form form = new Form();
-            form.Show();
-            form.Width = 820;
-            form.Height = 500;
-            DrawingGraph drawing = new DrawingGraph(form.CreateGraphics(), n, 1, form.Width, form.Height);
-            drawing.DrawNewNumericGraph((int[,])matrix.Clone(), DrawingGraphs.Enums.TypeLocationVertex.RectangleWithCenter, checkBox1.Checked);
-        }
 
-        private void button5_Click(object sender, EventArgs e)
+
+        private void button6_Click(object sender, EventArgs e)
         {
-            int[,] b = GraphHelper.PayWayxForDFS(matrix, n);
+            int[,] b = (int[,])weightMatrix.Clone();
             Form form = new Form();
             form.Show();
             form.AutoSize = true;
@@ -146,49 +149,6 @@ namespace Lab4
                 for (int j = 0; j < n; j++)
                 {
                     dataGridView.Rows[i].Cells[j].Value = b[i, j].ToString();
-                }
-            }
-            dataGridView.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
-            dataGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
-            form.Controls.Add(dataGridView);
-        }
-
-        private void button6_Click(object sender, EventArgs e)
-        {
-            int[,] b = GraphHelper.PayWayxForDFS(matrix, n);
-            int[,] c = new int[n, n];
-            int number = 0;
-            for (int i = 0; i < n; i++)
-            {
-                for (int j = 0; j < n; j++)
-                {
-                    if (b[i, j] != 0)
-                    {
-                        c[number, j] = 1;
-                        number++;
-                    }
-                }
-            }
-            Form form = new Form();
-            form.Show();
-            form.AutoSize = true;
-            DataGridView dataGridView = new DataGridView();
-            dataGridView.Width = 500;
-            dataGridView.Height = 500;
-            for (int i = 0; i < n; i++)
-            {
-                dataGridView.Columns.Add(i.ToString(), (i + 1).ToString());
-            }
-            for (int i = 0; i < n; i++)
-            {
-                dataGridView.Rows.Add();
-                dataGridView.Rows[i].HeaderCell.Value = (i + 1).ToString();
-            }
-            for (int i = 0; i < n; i++)
-            {
-                for (int j = 0; j < n; j++)
-                {
-                    dataGridView.Rows[i].Cells[j].Value = c[i, j].ToString();
                 }
             }
             dataGridView.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;

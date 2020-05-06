@@ -19,12 +19,12 @@ namespace Lab2
         private int n = 2;
         private bool IsDrawing = false;
         private Graphics graphics;
-        
+
         public Form1()
         {
             InitializeComponent();
             this.graphics = this.CreateGraphics();
-            matrix = GraphHelper.GenerateMatrixLab2(n, 9, 3, 0, 8);
+            matrix = GraphHelper.GenerateAdjanceMatrixLab2(n, 9, 3, 0, 8, checkBox1.Checked);
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -43,7 +43,7 @@ namespace Lab2
                 n = 10;
                 MessageBox.Show("n must be a number!!!");
             }
-            matrix = GraphHelper.GenerateMatrixLab2(n, 9, 3, 0, 8);
+            matrix = GraphHelper.GenerateAdjanceMatrixLab2(n, 9, 3, 0, 8, checkBox1.Checked);
 
             Draw();
         }
@@ -58,9 +58,9 @@ namespace Lab2
         {
             graphics.Clear(Color.White);
             DrawingGraph drawing = new DrawingGraph(graphics, n, 1, this.Size.Width - dataGridView1.Width, this.Size.Height);
-            drawing.DrawGraph(matrix, DrawingGraphs.Enums.TypeLocationVertex.RectangleWithCenter, checkBox1.Checked);
+            drawing.DrawGraph((int[,])matrix.Clone(), null, DrawingGraphs.Enums.TypeLocationVertex.RectangleWithCenter, checkBox1.Checked, 0);
             Analitics();
-           
+
         }
         private void Analitics()
         {
@@ -107,7 +107,7 @@ namespace Lab2
 
             }
             //dataGridView1.Columns[0].HeaderCell.Value = "Vertex";
-            if(p==true)
+            if (p == true)
             {
                 label4.Text = "true";
                 textBox2.Text = r.ToString();
@@ -124,21 +124,6 @@ namespace Lab2
             graphics = this.CreateGraphics();
             if (IsDrawing)
                 Draw();
-        }
-
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
-        {
-
         }
 
         private void textBox2_TextChanged(object sender, EventArgs e)
