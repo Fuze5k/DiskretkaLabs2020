@@ -124,7 +124,7 @@ namespace Lab6
             form.Height = 500;
             DrawingGraph drawing = new DrawingGraph(form.CreateGraphics(), n, 1, form.Width, form.Height);
 
-            List<int>[] result = drawing.DrawDijkstra(matrix, weightMatrix, DrawingGraphs.Enums.TypeLocationVertex.RectangleWithCenter, checkBox1.Checked);
+            List<int>[] result = drawing.DrawDijkstra((int[,]) matrix.Clone(), (int[,]) weightMatrix.Clone(), DrawingGraphs.Enums.TypeLocationVertex.RectangleWithCenter, checkBox1.Checked);
 
             Form form1 = new Form();
             form1.Show();
