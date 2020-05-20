@@ -17,10 +17,10 @@ namespace DrawingGraphs.Logic
             this.graphics = graphics;
         }
 
-        public void DrawCircle(int r, int x, int y, float width)
+        public void DrawCircle(int r, int x, int y, float width,Color color)
         {
             int d = 2 * r;
-            Pen pen = new Pen(Color.Black, width);
+            Pen pen = new Pen(color, width);
             //Rectangle rectangle = new Rectangle(x, y, r, r);
             try
             {

@@ -50,8 +50,73 @@ namespace DrawingGraphs
             DrawVertexCircle(vertex);
 
             PayWayxForDFS(adjacencymatrix, n, vertex, arrow, Color.Red, 0, true);
-
         }
+
+        public List<int>[] DrawDijkstra(int[,] adjacencymatrix, int[,] weigthmatrix, TypeLocationVertex type, bool arrow)
+        {
+            List<Point> vertex = GetPointLocationVertex(type);
+            DrawVertexCircle(vertex);
+            DrawVertexChisla(vertex);
+            return Dijkstra(adjacencymatrix, weigthmatrix, n, vertex, arrow, Color.Red, 1500, true);
+        }
+
+        private List<int>[] Dijkstra(int[,] adjencymatrix, int[,] weigthmatrix, int n, List<Point> vertex, bool arrow, Color color, int interval, bool drawchisla)
+        {
+            List<int>[] paths = new List<int>[n + 1];
+            bool[] v = new bool[n];
+            int[] d = new int[n];
+            for (int i = 0; i < n; i++)
+            {
+                v[i] = false;
+                d[i] = Int32.MaxValue;
+            }
+
+            d[0] = 0;
+            int minvalue = 0;
+            paths[0] = new List<int> { 0 };
+            while (minvalue != Int32.MaxValue)
+            {
+                minvalue = Int32.MaxValue;
+                int indminvalue = 0;
+                for (int i = 0; i < n; i++)
+                {
+                    if (v[i] == false && d[i] < minvalue)
+                    {
+                        minvalue = d[i];
+                        indminvalue = i;
+                    }
+                }
+
+
+                if (minvalue != Int32.MaxValue)
+                {
+                    DrawCircle(figure.Radius, vertex[indminvalue].X, vertex[indminvalue].Y, this.widthline, Color.Red);
+                    for (int i = 0; i < n; i++)
+                    {
+                        if (adjencymatrix[indminvalue, i] != 0)
+                        {
+                            if (weigthmatrix[indminvalue, i] + d[indminvalue] < d[i])
+                            {
+                                d[i] = d[indminvalue] + weigthmatrix[indminvalue, i];
+                                paths[i] = new List<int>(paths[indminvalue]);
+                                paths[i].Add(i);
+                                DrawOneLine(indminvalue, i, adjencymatrix, vertex, arrow, Color.Red, weigthmatrix);
+                                System.Threading.Thread.Sleep(interval);
+                            }
+                        }
+                    }
+                    v[indminvalue] = true;
+                    DrawCircle(figure.Radius, vertex[indminvalue].X, vertex[indminvalue].Y, this.widthline, Color.Black);
+                }
+            }
+            paths[n] = new List<int>();
+            for (int i = 0; i < n; i++)
+            {
+                paths[n].Add(d[i]);
+            }
+            return paths;
+        }
+
         public void DrawStagesGraph(int[,] adjacencymatrix, TypeLocationVertex type, bool arrow)
         {
             List<Point> vertex = GetPointLocationVertex(type);
@@ -155,7 +220,7 @@ namespace DrawingGraphs
 
                 vertexpoint[vertexpoint.Count - 1] = p2;
                 if (weigthmatrix != null)
-                    DrawVertexString(weigthmatrix[indp1, indp2].ToString(), (int)(figure.Radius / 4), vertexpoint[vertexpoint.Count / 2].X-5, vertexpoint[vertexpoint.Count / 2].Y, Color.Red);
+                    DrawVertexString(weigthmatrix[indp1, indp2].ToString(), (int)(figure.Radius / 4), vertexpoint[vertexpoint.Count / 2].X - 5, vertexpoint[vertexpoint.Count / 2].Y, Color.Red);
             }
             else
             {
@@ -281,103 +346,6 @@ namespace DrawingGraphs
             }
             return vertexpoint;
         }
-        //private float sqr(float x)
-        //{
-        //    return x * x;
-        //}
-
-        /* private bool IntersectionLineCircle(float x1, float y1, float x2, float y2, float x0, float y0, float r)
-         {
-             //y0 = this.heightform - y0;
-             //y1 = this.heightform - y1;
-             //y2 = this.heightform - y2;
-
-             float t = ((x0 - x1) * (x2 - x1) + (y0 - y1) * (y2 - y1)) /
-                 ((float)Math.Pow(x2 - x1, 2) + (float)Math.Pow(y2 - y1, 2));
-             if (t < 0)
-                 t = 0;
-             if (t > 1)
-                 t = 1;
-             double l = Math.Sqrt(Math.Pow((x1 - x0 + (x2 - x1 * t)), 2) + 
-                 Math.Pow((y1-y0+(y2-y1)*t),2));
-             if (l > r)
-                 return false;
-             else 
-                 return true;
-             //if (x0 + r * 0.9 < Math.Min(x1, x2))
-             //    return false;
-             //if (x0 - r * 0.9 > Math.Max(x1, x2))
-             //    return false;
-             //if (y0 + r * 0.9 < Math.Min(y1, y2))
-             //    return false;
-             //if (y0 - r * 0.9 > Math.Max(y1, y2))
-             //    return false;
-
-
-             //double A = y1 - y2;
-             //double B = x1 - x2;
-             //double C = y1 * x2 - y2 * x1;
-             //double H = Math.Abs(A * x0 + B * y0 + C) / Math.Sqrt(A * A + B * B);
-             //if (H > r)
-             //{
-
-             //    return false;
-             //}
-             //else
-             //{
-             //    return true;
-             //}
-             //double eps = 0.0000000001;
-             //float dx01 = x1 - x0, dy01 = y1 - y0, dx12 = x2 - x1, dy12 = y2 - y1;
-             //float a = sqr(dx12) + sqr(dy12);
-
-             //float k = dx01 * dx12 + dy01 * dy12;
-             //float c = sqr(dx01) + sqr(dy01) - sqr(r);
-             //float d1 = sqr(k) - a * c;
-             //if (d1 < 0)
-             //    return false;
-             //else if (Math.Abs(d1) < eps)
-             //{
-             //    float t = -k / a;
-             //    float xi = x1 + t * dx12, yi = y1 + t * dy12;
-
-             //    if (t > 0 - eps && t < 1 + eps)
-             //        return true;
-
-             //    else
-             //        return false;
-
-             //}
-             //else
-             //{
-             //    float t1 = (float)(-k + Math.Sqrt(d1)) / a, t2 = (float)(-k - Math.Sqrt(d1)) / a;
-             //    if (t1 > t2)
-             //    {
-             //        float qw = t1;
-             //        t1 = t2;
-             //        t2 = qw;
-             //    }
-             //    float xi1 = x1 + t1 * dx12, yi1 = y1 + t1 * dy12;
-             //    float xi2 = x1 + t2 * dx12, yi2 = y1 + t2 * dy12;
-             //    if (t1 >= 0 - eps && t2 <= 1 + eps)
-             //        if (t1 > 0 - eps && t2 < 1 + eps)
-             //            return true;
-
-             //        else
-             //            return true;
-
-             //    else if (t2 <= 0 + eps || t1 >= 1 - eps)
-             //        if (t2 < 0 + eps || t1 > 1 - eps)
-             //            return false;
-
-             //        else
-             //            return true;
-
-             //    else
-             //        return true;
-             //}
-         }
-         */
         bool IntersectionLineCircle(float x1, float y1, float x2, float y2, float x0, float y0, float radius)
         {
             float x01 = x1 - x0;
@@ -408,7 +376,7 @@ namespace DrawingGraphs
         {
             for (int i = 0; i < vertex.Count; i++)
             {
-                DrawCircle(figure.Radius, vertex[i].X, vertex[i].Y, this.widthline);
+                DrawCircle(figure.Radius, vertex[i].X, vertex[i].Y, this.widthline, Color.Black);
             }
         }
         private List<Point> GetPointLocationVertex(TypeLocationVertex type)
